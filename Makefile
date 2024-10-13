@@ -1,8 +1,13 @@
-ASM:=nasm
-QEMU?=qemu-system-i386
-all:
-	${ASM} fire.asm -f bin -o fire
-run: all
-	${QEMU} -hda fire
+PROG=		fire
+
+all: ${PROG}
+
+run: ${PROG}
+	qemu-system-i386 -hda ${PROG}
+
+${PROG}: ${PROG}.S
+	gcc -o ${PROG}.o -c -nostdlib -Ttext 0 -m32 $<
+	objcopy -O binary --only-section=.text ${PROG}.o ${PROG}
+
 clean:
-	rm fire
+	rm -rf ${PROG}.o ${PROG}
